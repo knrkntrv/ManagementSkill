@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.java.skillmanagement.entity.EmployeeSkillProficiency;
+import com.java.skillmanagement.exception.UserNotFoundException;
 import com.java.skillmanagement.service.EmployeeSkillManageService;
 
 
@@ -58,17 +59,15 @@ public class EmployeeSkillManageController {
 	 */
 	
 	@GetMapping("/employee/{id}")
-    public ResponseEntity<Object> showOne(@PathVariable("id") int id) throws Exception {
+    public EmployeeSkillProficiency retriveUser(@PathVariable("id") int id) throws Exception {
 		
-		try {
-			EmployeeSkillProficiency returnData= null;
-			returnData = employeeSkillService.findOne(id);
-			return new ResponseEntity<Object>(returnData, HttpStatus.OK);
-			
-		}catch(Exception e) {
-			return new ResponseEntity<Object>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-		}		  
-	}	
+			EmployeeSkillProficiency returnData = employeeSkillService.findOne(id);
+			if (returnData == null) {
+				throw new UserNotFoundException("id: "+ id); 
+			} else {
+				return returnData;
+			}	  
+	}
 	
 	/**
 	 * API to retrieve the records by skillname
@@ -77,14 +76,14 @@ public class EmployeeSkillManageController {
 	 */
 	
 	@GetMapping(value = "/employee/skill/{skillname}")
-	public ResponseEntity<Object> getPersoneByName(@PathVariable("skillname") String skill) throws Exception {
-		try {
-			List<EmployeeSkillProficiency> returnData= null;
-			returnData = employeeSkillService.findBySkills(skill);
-			return new ResponseEntity<Object>(returnData, HttpStatus.OK); 
-		}catch(Exception e) {
-			return new ResponseEntity<Object>(null, HttpStatus.INTERNAL_SERVER_ERROR); 
-		}		
+	public List<EmployeeSkillProficiency> getPersoneByName(@PathVariable("skillname") String skill) throws Exception {
+			
+		List<EmployeeSkillProficiency> returnData = employeeSkillService.findBySkills(skill);
+			if (returnData.size() == 0) {
+				throw new UserNotFoundException("skillName: "+ skill); 
+			} else {
+				return returnData;
+			}	
 	}
 	
 	/**
@@ -94,7 +93,7 @@ public class EmployeeSkillManageController {
 	 */
 	
 	@PostMapping("/employee/skill")
-    public ResponseEntity<Object> create(@RequestBody EmployeeSkillProficiency inputData) throws Exception {
+    public ResponseEntity<Object> createUserSkill(@RequestBody EmployeeSkillProficiency inputData) throws Exception {
 		
 		try {
     		EmployeeSkillProficiency returnData= null;
@@ -112,14 +111,13 @@ public class EmployeeSkillManageController {
 	 */
 	
     @PutMapping("/employee/{id}")
-    public ResponseEntity<Object> edit(@PathVariable("id") int scheduleId,
+    public EmployeeSkillProficiency updateUserSkill(@PathVariable("id") int id,
     												@RequestBody EmployeeSkillProficiency inputData) throws Exception{		
-    	try {
-    		EmployeeSkillProficiency returnData= null;
-			returnData = employeeSkillService.update(inputData);
-			return new ResponseEntity<Object>(returnData, HttpStatus.OK); 			
-		}catch(Exception e) {
-			return new ResponseEntity<Object>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+    	EmployeeSkillProficiency returnData = employeeSkillService.update(inputData);
+    	if (returnData == null) {
+			throw new UserNotFoundException("id: "+ id); 
+		} else {
+			return returnData;
 		}
     }
     
@@ -130,7 +128,7 @@ public class EmployeeSkillManageController {
 	 */
     
     @DeleteMapping("/employee/{id}" )
-    public ResponseEntity<Object> delete(@PathVariable("id") int id) {
+    public ResponseEntity<Object> deleteUserSkill(@PathVariable("id") int id) {
     	
     	try {
     		employeeSkillService.delete(id);

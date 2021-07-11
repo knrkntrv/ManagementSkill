@@ -26,4 +26,5 @@ public class EmployeeSkillSwaggerConfig {
           .paths(PathSelectors.any())                          
           .build();                                           
     }
+	
 }
