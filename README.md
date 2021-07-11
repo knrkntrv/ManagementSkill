@@ -1,5 +1,9 @@
 # ManagementSkill
 
+Swagger URL:
+
+http://localhost:8080/organisation/swagger-ui.html#/
+
 API Endpoints
 ------------------
 Create:
